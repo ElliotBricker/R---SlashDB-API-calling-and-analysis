@@ -1,0 +1,45 @@
+---
+title: "Accessing Web API with SlashDB"
+output: html_document
+---
+library(httr)
+library(jsonlite)
+library(magrittr)
+library(ggplot2)
+
+ChinookInvoices <- GET("http://demo.slashdb.com/db/Chinook/Invoice.json")
+
+ChinookInvoices$status_code
+ChinookInvoices$headers$'content-type'
+names(ChinookInvoices)
+# Get the content of the HTTP response
+text_content <- content(ChinookInvoices, as = 'text', encoding = "UTF-8")
+
+text_content
+ 
+
+# parse with jsonlite
+json_content <- text_content %>% fromJSON
+json_content
+BillingCountry <- json_content$BillingCountry
+TotalPurchaseAmount <- json_content$Total
+
+ 
+
+dat <- data.frame(
+    BillingCountry,
+    TotalPurchaseAmount
+)
+
+p <- ggplot(data=dat, aes(x=BillingCountry, y=TotalPurchaseAmount)) +
+    geom_bar(stat="identity")
+
+
+p
+
+
+
+
+
+
+
